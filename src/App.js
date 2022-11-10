@@ -1,7 +1,29 @@
-import { utils, colors } from "./utils"
+import { useState } from "react"
+import { utils } from "./utils"
+import PlayNumber from "./components/PlayNumber"
+import StarDisplay from "./components/StarDisplay"
 
 function App() {
-    const stars = utils.random(1, 9)
+    const [stars, setStars] = useState(utils.random(1, 9))
+    const [availableNums, setAvailableNums] = useState([
+        1, 2, 3, 4, 5, 6, 7, 8, 9,
+    ])
+    const [candidateNums, setCandidateNums] = useState([1, 7])
+
+    const candidatesAreWrong = utils.sum(candidateNums) > stars
+
+    const numberStatus = (number) => {
+        if (!availableNums.includes(number)) {
+            return "used"
+        }
+
+        if (candidateNums.includes(number)) {
+            return candidatesAreWrong ? "wrong" : "candidate"
+        }
+
+        return "available"
+    }
+
     return (
         <>
             <header>Star Match Game</header>
@@ -12,19 +34,15 @@ function App() {
                 </div>
                 <div className="body">
                     <div className="left">
-                        {utils.range(1, stars).map((starId) => (
-                            <div
-                                key={starId}
-                                className="star"
-                                style={{ color: colors.used }}
-                            ></div>
-                        ))}
+                        <StarDisplay stars={stars} />
                     </div>
                     <div className="right">
                         {utils.range(1, 9).map((number, numId) => (
-                            <button key={numId} className="number">
-                                {number}
-                            </button>
+                            <PlayNumber
+                                key={numId}
+                                number={number}
+                                status={numberStatus(number)}
+                            />
                         ))}
                     </div>
                 </div>
