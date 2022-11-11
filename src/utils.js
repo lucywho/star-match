@@ -34,3 +34,5 @@ export const colors = {
     wrong: "lightcoral",
     candidate: "deepskyblue",
 }
+
+export const startingSet = [1, 2, 3, 4, 5, 6, 7, 8, 9]

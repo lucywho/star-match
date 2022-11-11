@@ -1,13 +1,11 @@
-import { utils } from "./utils"
+import { utils, startingSet } from "./utils"
 import { useState } from "react"
 import PlayNumber from "./components/PlayNumber"
 import StarDisplay from "./components/StarDisplay"
 
 function App() {
-    const [stars, setStars] = useState(utils.random(1, 9))
-    const [availableNums, setAvailableNums] = useState([
-        1, 2, 3, 4, 5, 6, 7, 8, 9,
-    ])
+    const [stars, setStars] = useState(utils.random(1, startingSet.length))
+    const [availableNums, setAvailableNums] = useState(startingSet)
     const [candidateNums, setCandidateNums] = useState([])
 
     const candidatesAreWrong = utils.sum(candidateNums) > stars
@@ -35,7 +33,7 @@ function App() {
             const newAvailableNums = availableNums.filter(
                 (num) => !newCandidateNums.includes(num)
             )
-            setStars(utils.randomSumIn(newAvailableNums, 9))
+            setStars(utils.randomSumIn(newAvailableNums, startingSet.length))
             setAvailableNums(newAvailableNums)
             setCandidateNums([])
         }
@@ -54,14 +52,16 @@ function App() {
                         <StarDisplay stars={stars} />
                     </div>
                     <div className="right">
-                        {utils.range(1, 9).map((number, numId) => (
-                            <PlayNumber
-                                key={numId}
-                                number={number}
-                                status={numberStatus(number)}
-                                onClick={onNumberClick}
-                            />
-                        ))}
+                        {utils
+                            .range(1, startingSet.length)
+                            .map((number, numId) => (
+                                <PlayNumber
+                                    key={numId}
+                                    number={number}
+                                    status={numberStatus(number)}
+                                    onClick={onNumberClick}
+                                />
+                            ))}
                     </div>
                 </div>
                 <div className="timer">Time Remaining: 10</div>
