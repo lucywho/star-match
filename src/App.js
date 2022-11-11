@@ -1,5 +1,5 @@
-import { useState } from "react"
 import { utils } from "./utils"
+import { useState } from "react"
 import PlayNumber from "./components/PlayNumber"
 import StarDisplay from "./components/StarDisplay"
 
@@ -8,7 +8,7 @@ function App() {
     const [availableNums, setAvailableNums] = useState([
         1, 2, 3, 4, 5, 6, 7, 8, 9,
     ])
-    const [candidateNums, setCandidateNums] = useState([1, 7])
+    const [candidateNums, setCandidateNums] = useState([])
 
     const candidatesAreWrong = utils.sum(candidateNums) > stars
 
@@ -22,6 +22,23 @@ function App() {
         }
 
         return "available"
+    }
+
+    const onNumberClick = (number, currentStatus) => {
+        if (currentStatus === "used") {
+            return
+        }
+        const newCandidateNums = candidateNums.concat(number)
+        if (utils.sum(newCandidateNums) !== stars) {
+            setCandidateNums(newCandidateNums)
+        } else {
+            const newAvailableNums = availableNums.filter(
+                (num) => !newCandidateNums.includes(num)
+            )
+            setStars(utils.randomSumIn(newAvailableNums, 9))
+            setAvailableNums(newAvailableNums)
+            setCandidateNums([])
+        }
     }
 
     return (
@@ -42,6 +59,7 @@ function App() {
                                 key={numId}
                                 number={number}
                                 status={numberStatus(number)}
+                                onClick={onNumberClick}
                             />
                         ))}
                     </div>
