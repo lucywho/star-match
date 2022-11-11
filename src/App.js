@@ -12,7 +12,7 @@ function App() {
 
     useEffect(() => {
         console.log("useEffect")
-        if (secondsLeft > 0) {
+        if (secondsLeft > 0 && availableNums.length > 0) {
             const timerId = setTimeout(() => {
                 setSecondsLeft(secondsLeft - 1)
             }, 1000)
@@ -41,7 +41,7 @@ function App() {
     }
 
     const onNumberClick = (number, currentStatus) => {
-        if (currentStatus === "used") {
+        if (currentStatus === "used" || gameStatus !== "active") {
             return
         }
 
@@ -67,6 +67,7 @@ function App() {
         setStars(utils.random(1, startingSet.length))
         setAvailableNums(startingSet)
         setCandidateNums([])
+        setSecondsLeft(10)
     }
 
     return (
