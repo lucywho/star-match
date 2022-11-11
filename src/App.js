@@ -1,5 +1,6 @@
+import { useState, useEffect } from "react"
 import { utils, startingSet } from "./utils"
-import { useState } from "react"
+import PlayAgain from "./components/PlayAgain"
 import PlayNumber from "./components/PlayNumber"
 import StarDisplay from "./components/StarDisplay"
 
@@ -7,8 +8,25 @@ function App() {
     const [stars, setStars] = useState(utils.random(1, startingSet.length))
     const [availableNums, setAvailableNums] = useState(startingSet)
     const [candidateNums, setCandidateNums] = useState([])
+    const [secondsLeft, setSecondsLeft] = useState(10)
+
+    useEffect(() => {
+        console.log("useEffect")
+        if (secondsLeft > 0) {
+            const timerId = setTimeout(() => {
+                setSecondsLeft(secondsLeft - 1)
+            }, 1000)
+            return () => clearTimeout(timerId)
+        }
+    })
 
     const candidatesAreWrong = utils.sum(candidateNums) > stars
+    const gameStatus =
+        availableNums.length === 0
+            ? "won"
+            : secondsLeft === 0
+            ? "lost"
+            : "active"
 
     const numberStatus = (number) => {
         if (!availableNums.includes(number)) {
@@ -26,7 +44,12 @@ function App() {
         if (currentStatus === "used") {
             return
         }
-        const newCandidateNums = candidateNums.concat(number)
+
+        const newCandidateNums =
+            currentStatus === "available"
+                ? candidateNums.concat(number)
+                : candidateNums.filter((can) => can !== number)
+
         if (utils.sum(newCandidateNums) !== stars) {
             setCandidateNums(newCandidateNums)
         } else {
@@ -39,6 +62,13 @@ function App() {
         }
     }
 
+    const resetGame = () => {
+        //NOTE: holding code, need to reset side effects once timer built
+        setStars(utils.random(1, startingSet.length))
+        setAvailableNums(startingSet)
+        setCandidateNums([])
+    }
+
     return (
         <>
             <header>Star Match Game</header>
@@ -49,7 +79,14 @@ function App() {
                 </div>
                 <div className="body">
                     <div className="left">
-                        <StarDisplay stars={stars} />
+                        {gameStatus !== "active" ? (
+                            <PlayAgain
+                                onClick={resetGame}
+                                gameStatus={gameStatus}
+                            />
+                        ) : (
+                            <StarDisplay stars={stars} />
+                        )}
                     </div>
                     <div className="right">
                         {utils
@@ -64,7 +101,7 @@ function App() {
                             ))}
                     </div>
                 </div>
-                <div className="timer">Time Remaining: 10</div>
+                <div className="timer">Time Remaining: {secondsLeft}</div>
             </div>
         </>
     )
